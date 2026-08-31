@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Project 01 | Secure AWS Static Portfolio</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Project 01</h1>
+    <h2>Secure AWS Static Portfolio</h2>
+
+    <p>
+        A secure, globally distributed static website built on AWS
+        using private S3 storage, CloudFront, Route 53, ACM and AWS WAF.
+    </p>
+
+    <p>
+        <a href="index.html">← Back to Portfolio</a>
+    </p>
+</header>
+
+
+<section>
+    <h2>Project Objective</h2>
+
+    <p>
+        The objective of this project was to design and deploy a secure
+        static website using managed AWS services while keeping the
+        Amazon S3 origin private and delivering content globally through
+        Amazon CloudFront.
+    </p>
+
+    <p>
+        The environment was initially deployed manually through the
+        AWS Management Console in order to understand the function
+        and interaction of each AWS component. The infrastructure will
+        later be recreated using Terraform as Infrastructure as Code.
+    </p>
+</section>
+
+
+<section>
+    <h2>Architecture</h2>
+
+    <p>
+        The website uses Route 53 for DNS, CloudFront for global content
+        delivery, AWS Certificate Manager for HTTPS, AWS WAF for web
+        protection, and a private Amazon S3 bucket as the origin.
+    </p>
+
+    <div class="architecture-image">
+        <img
+            src="images/aws-project01-architecture.png"
+            alt="AWS architecture diagram showing Route 53, CloudFront, ACM, AWS WAF and a private Amazon S3 bucket"
+        >
+    </div>
+</section>
+
+
+<section>
+    <h2>AWS Services Used</h2>
+
+    <div class="project">
+        <h3>Amazon S3</h3>
+
+        <p>
+            Stores the static HTML, CSS and website assets.
+            Public access to the S3 bucket is blocked.
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>Amazon CloudFront</h3>
+
+        <p>
+            Provides global content delivery, HTTPS termination,
+            edge caching and controlled access to the private S3 origin.
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>Amazon Route 53</h3>
+
+        <p>
+            Provides authoritative DNS for aws.waygood.net using
+            A and AAAA Alias records pointing to the CloudFront distribution.
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>AWS Certificate Manager</h3>
+
+        <p>
+            Provides the TLS certificate used by CloudFront to secure
+            HTTPS connections to aws.waygood.net.
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>AWS WAF</h3>
+
+        <p>
+            Provides Layer 7 protection against common web threats
+            and malicious requests at the CloudFront edge.
+        </p>
+    </div>
+</section>
+
+
+<section>
+    <h2>Networking Design</h2>
+
+    <p>
+        Route 53 provides dual-stack DNS for the website.
+        An A Alias record supports IPv4 clients while an AAAA Alias
+        record supports IPv6 clients.
+    </p>
+
+    <div class="architecture">
+        <pre>
+aws.waygood.net
+
+A Alias     → CloudFront → IPv4
+AAAA Alias  → CloudFront → IPv6
+        </pre>
+    </div>
+
+    <p>
+        CloudFront is the public entry point for the application.
+        The S3 bucket is not exposed directly to the public Internet.
+    </p>
+</section>
+
+
+<section>
+    <h2>Security Design</h2>
+
+    <p>
+        The Amazon S3 bucket has Block Public Access enabled.
+        Website content can only be retrieved through CloudFront
+        using authorised origin access.
+    </p>
+
+    <div class="architecture">
+        <pre>
+Direct Internet Request
+        |
+        v
+S3 Object URL
+        |
+        v
+ACCESS DENIED
+
+
+Internet
+   |
+   v
+CloudFront
+   |
+   v
+Origin Access Control
+   |
+   v
+Private S3
+   |
+   v
+Website Content
+        </pre>
+    </div>
+</section>
+
+
+<section>
+    <h2>Request Flow</h2>
+
+    <ol>
+        <li>
+            The client requests DNS resolution for
+            <strong>aws.waygood.net</strong>.
+        </li>
+
+        <li>
+            Route 53 returns the CloudFront distribution using
+            an A or AAAA Alias record.
+        </li>
+
+        <li>
+            The client establishes an HTTPS connection to CloudFront.
+        </li>
+
+        <li>
+            AWS WAF evaluates the incoming request.
+        </li>
+
+        <li>
+            CloudFront checks its edge cache for the requested object.
+        </li>
+
+        <li>
+            If the object is cached, CloudFront returns it immediately.
+        </li>
+
+        <li>
+            If the object is not cached, CloudFront retrieves it from
+            the private S3 origin using Origin Access Control.
+        </li>
+
+        <li>
+            CloudFront returns the requested content to the client.
+        </li>
+    </ol>
+</section>
+
+
+<section>
+    <h2>Regional Design</h2>
+
+    <div class="project">
+        <h3>Amazon S3 Origin</h3>
+
+        <p>
+            Region: <strong>eu-west-2 (London)</strong>
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>CloudFront TLS Certificate</h3>
+
+        <p>
+            AWS Certificate Manager region:
+            <strong>us-east-1 (N. Virginia)</strong>
+        </p>
+
+        <p>
+            CloudFront requires ACM certificates used for viewer HTTPS
+            connections to be created in us-east-1.
+        </p>
+    </div>
+</section>
+
+
+<section>
+    <h2>Validation</h2>
+
+    <div class="project">
+        <h3>Direct S3 Access</h3>
+
+        <p>
+            <strong>Result:</strong> Access Denied
+        </p>
+
+        <p>
+            This confirms the S3 origin is not publicly accessible.
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>CloudFront Access</h3>
+
+        <p>
+            <strong>Result:</strong> Website returned successfully.
+        </p>
+    </div>
+
+
+    <div class="project">
+        <h3>Custom HTTPS Domain</h3>
+
+        <p>
+            <strong>Result:</strong>
+            https://aws.waygood.net returned successfully using
+            a valid AWS Certificate Manager TLS certificate.
+        </p>
+    </div>
+</section>
+
+
+<section>
+    <h2>Skills Demonstrated</h2>
+
+    <p>
+        <strong>AWS:</strong>
+        S3, CloudFront, Route 53, ACM, AWS WAF
+    </p>
+
+    <p>
+        <strong>Networking:</strong>
+        DNS, IPv4, IPv6, HTTPS, TLS, CDN, HTTP caching
+    </p>
+
+    <p>
+        <strong>Security:</strong>
+        Private S3 origin, Origin Access Control, TLS,
+        AWS WAF and restricted public access
+    </p>
+
+    <p>
+        <strong>Architecture:</strong>
+        Managed services, global content delivery,
+        dual-stack DNS and secure origin design
+    </p>
+</section>
+
+
+<section>
+    <h2>Next Phase</h2>
+
+    <p>
+        The next phase of the project will recreate the infrastructure
+        using Terraform and store the configuration in GitHub as
+        Infrastructure as Code.
+    </p>
+
+    <p>
+        Further enhancements will include monitoring, logging,
+        improved cache management and automated deployment.
+    </p>
+</section>
+
+
+<footer>
+    <p>Gareth Waygood | AWS Cloud & Network Engineering</p>
+</footer>
+
+</body>
+</html>

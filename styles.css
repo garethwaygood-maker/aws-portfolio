@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #0b1220;
+    color: #e8edf5;
+    line-height: 1.6;
+}
+
+header {
+    padding: 80px 10%;
+    background: #111c30;
+}
+
+header h1 {
+    font-size: 48px;
+    margin-bottom: 0;
+}
+
+header h2 {
+    font-size: 26px;
+    font-weight: normal;
+}
+
+section {
+    padding: 50px 10%;
+    max-width: 1000px;
+}
+
+section h2 {
+    font-size: 30px;
+}
+
+.project {
+    background: #152238;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.project h3 {
+    margin-top: 0;
+}
+
+footer {
+    padding: 30px 10%;
+    background: #080d17;
+}
+a {
+    color: #8ec5ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.architecture {
+    background: #0a1020;
+    padding: 25px;
+    margin: 25px 0;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.architecture pre {
+    font-family: "Courier New", monospace;
+    line-height: 1.5;
+}
+
+ol li {
+    margin-bottom: 12px;
+}
+/* AWS Architecture Diagram */
+
+.architecture-image {
+    margin: 30px auto;
+    text-align: center;
+}
+
+.architecture-image img {
+    width: 100%;
+    max-width: 1000px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
