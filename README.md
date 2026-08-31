@@ -7,7 +7,7 @@ This repository contains hands-on AWS projects designed to show real-world infra
 Project 1 — Secure Static Website Hosting
 ## Architecture Diagram
 
-![AWS Static Website Architecture](images/aws-project1-architecture.png)
+![AWS Static Website Architecture](images/aws-project01-architecture.png)
 
 A static portfolio website hosted on AWS using a secure and globally distributed architecture.
 
