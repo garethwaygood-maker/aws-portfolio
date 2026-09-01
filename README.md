@@ -1,4 +1,5 @@
 AWS Cloud Portfolio
+Built as a hands-on portfolio of AWS cloud and networking projects
 
 A practical AWS portfolio demonstrating cloud architecture, networking, security, content delivery and automation.
 
