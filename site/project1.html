@@ -17,7 +17,8 @@
 
     <p>
         A secure, globally distributed static website built on AWS
-        using private S3 storage, CloudFront, Route 53, ACM and AWS WAF.
+        using private S3 storage, CloudFront, Route 53, ACM and AWS WAF,
+        with automated CI/CD deployment through GitHub Actions and OIDC.
     </p>
 
     <p>
@@ -39,7 +40,8 @@
     <p>
         The environment was initially deployed manually through the
         AWS Management Console in order to understand the function
-        and interaction of each AWS component. The infrastructure will
+        and interaction of each AWS component. Deployment is now
+        automated using GitHub Actions, while the infrastructure will
         later be recreated using Terraform as Infrastructure as Code.
     </p>
 </section>
@@ -52,6 +54,8 @@
         The website uses Route 53 for DNS, CloudFront for global content
         delivery, AWS Certificate Manager for HTTPS, AWS WAF for web
         protection, and a private Amazon S3 bucket as the origin.
+        Website changes are deployed automatically from GitHub using
+        GitHub Actions and an AWS IAM role assumed through OIDC.
     </p>
 
     <div class="architecture-image">
@@ -114,6 +118,59 @@
             and malicious requests at the CloudFront edge.
         </p>
     </div>
+</section>
+
+<section>
+    <h2>Automated CI/CD Deployment</h2>
+
+    <p>
+        Website deployments are automated using GitHub Actions. Changes are
+        made locally, committed to Git and pushed to the main branch of the
+        GitHub repository. Each push triggers a deployment workflow.
+    </p>
+
+    <div class="architecture">
+        <pre>
+Local Development
+        |
+        v
+Git Commit + Push
+        |
+        v
+GitHub Repository
+        |
+        v
+GitHub Actions
+        |
+        v
+OIDC Federation
+        |
+        v
+AWS IAM Role
+        |
+        +-----> Sync website files to private S3
+        |
+        +-----> Create CloudFront invalidation
+        </pre>
+    </div>
+
+    <p>
+        GitHub Actions authenticates to AWS using OpenID Connect (OIDC) and
+        assumes a dedicated IAM deployment role. This avoids storing
+        long-lived AWS access keys in GitHub.
+    </p>
+
+    <p>
+        The IAM role follows the principle of least privilege and is scoped
+        to the permissions required to update the portfolio S3 bucket and
+        create CloudFront invalidations.
+    </p>
+
+    <p>
+        The workflow synchronises the contents of the local site directory
+        with Amazon S3 and then invalidates the CloudFront cache so updated
+        content is delivered automatically.
+    </p>
 </section>
 
 
@@ -292,7 +349,7 @@ Website Content
 
     <p>
         <strong>AWS:</strong>
-        S3, CloudFront, Route 53, ACM, AWS WAF
+        S3, CloudFront, Route 53, ACM, AWS WAF, IAM
     </p>
 
     <p>
@@ -303,13 +360,18 @@ Website Content
     <p>
         <strong>Security:</strong>
         Private S3 origin, Origin Access Control, TLS,
-        AWS WAF and restricted public access
+        AWS WAF, OIDC federation, least-privilege IAM
+        and restricted public access
     </p>
 
     <p>
         <strong>Architecture:</strong>
         Managed services, global content delivery,
-        dual-stack DNS and secure origin design
+        dual-stack DNS, secure origin design and CI/CD automation
+    </p>
+    <p>
+        <strong>DevOps:</strong>
+        Git, GitHub, GitHub Actions, CI/CD and automated deployment
     </p>
 </section>
 
@@ -325,7 +387,8 @@ Website Content
 
     <p>
         Further enhancements will include monitoring, logging,
-        improved cache management and automated deployment.
+        improved cache management and migration of the environment
+        to Terraform-managed Infrastructure as Code.
     </p>
 </section>
 
