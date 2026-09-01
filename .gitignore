@@ -1,0 +1,9 @@
+# macOS files
+.DS_Store
+
+# Terraform local files
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
