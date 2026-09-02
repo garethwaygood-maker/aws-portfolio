@@ -7,18 +7,67 @@
     <title>Gareth Waygood | AWS Network Engineer</title>
 
     <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .hero-layout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-copy {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .hero-headshot {
+            display: block;
+            flex: 0 0 auto;
+            width: clamp(220px, 24vw, 350px);
+            height: auto;
+            object-fit: contain;
+        }
+
+        @media (max-width: 760px) {
+            .hero-layout {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2rem;
+            }
+
+            .hero-headshot {
+                width: min(280px, 80vw);
+                align-self: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-    <h1>Gareth Waygood</h1>
-    <h2>AWS Cloud & Network Engineer</h2>
+    <div class="hero-layout">
+        <div class="hero-copy">
+            <h1>Gareth Waygood</h1>
+            <h2>AWS Cloud & Network Engineer</h2>
 
-    <p>
-        30+ years of networking experience applied to modern
-        AWS cloud infrastructure.
-    </p>
+            <p>
+                30+ years of networking experience applied to modern
+                AWS cloud infrastructure.
+            </p>
+        </div>
+
+        <img
+            class="hero-headshot"
+            src="images/proheadshot.png"
+            alt="Professional headshot of Gareth Waygood"
+            width="350"
+            height="350"
+        >
+    </div>
 </header>
 
 
