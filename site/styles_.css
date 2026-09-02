@@ -85,24 +85,3 @@ ol li {
     margin: 0 auto;
     object-fit: contain;
 }
-
-/* GitHub project button */
-.github-cta {
-    margin-top: 24px;
-}
-
-.github-button {
-    display: inline-block;
-    padding: 14px 22px;
-    background: #238636;
-    color: #ffffff;
-    border: 1px solid #2ea043;
-    border-radius: 8px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.github-button:hover {
-    background: #2ea043;
-    text-decoration: none;
-}
