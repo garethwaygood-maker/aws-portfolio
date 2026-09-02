@@ -40,9 +40,10 @@
     <p>
         The environment was initially deployed manually through the
         AWS Management Console in order to understand the function
-        and interaction of each AWS component. Deployment is now
-        automated using GitHub Actions, while the infrastructure will
-        later be recreated using Terraform as Infrastructure as Code.
+        and interaction of each AWS component. Deployment is automated
+        using GitHub Actions, and the existing live infrastructure has
+        now been brought under Terraform management as Infrastructure
+        as Code without recreating the production resources.
     </p>
 </section>
 
@@ -119,6 +120,49 @@
         </p>
     </div>
 </section>
+
+<section>
+    <h2>Infrastructure as Code with Terraform</h2>
+    <p>
+        After the AWS environment had been built and validated manually,
+        the existing production infrastructure was defined in Terraform
+        and imported into Terraform state. This brought the live environment
+        under Infrastructure as Code management without destroying or
+        recreating the working website.
+    </p>
+    <div class="architecture">
+        <pre>
+Existing AWS Infrastructure
+        |
+        v
+Define Matching Terraform Resources
+        |
+        v
+terraform validate
+        |
+        v
+terraform import
+        |
+        v
+terraform plan
+        |
+        v
+No changes - configuration matches AWS
+        </pre>
+    </div>
+    <p>
+        Terraform now manages the S3 bucket and security configuration,
+        CloudFront distribution, CloudFront Origin Access Control, Route 53
+        A and AAAA records, ACM certificate and AWS WAF Web ACL.
+    </p>
+    <p>
+        Local Terraform access uses AWS IAM Identity Center (SSO) with
+        temporary credentials rather than long-lived AWS access keys.
+        The final Terraform plan reports that the deployed infrastructure
+        matches the configuration with no changes required.
+    </p>
+</section>
+
 
 <section>
     <h2>Automated CI/CD Deployment</h2>
@@ -371,24 +415,25 @@ Website Content
     </p>
     <p>
         <strong>DevOps:</strong>
-        Git, GitHub, GitHub Actions, CI/CD and automated deployment
+        Git, GitHub, GitHub Actions, CI/CD, automated deployment,
+        Terraform, Infrastructure as Code, Terraform state and resource imports
     </p>
 </section>
 
 
 <section>
-    <h2>Next Phase</h2>
-
+    <h2>Current Status &amp; Future Enhancements</h2>
     <p>
-        The next phase of the project will recreate the infrastructure
-        using Terraform and store the configuration in GitHub as
-        Infrastructure as Code.
+        Project 01 is now deployed, automated through GitHub Actions and
+        managed as Infrastructure as Code using Terraform. The imported
+        Terraform configuration has been validated against the live AWS
+        environment with a clean plan showing no infrastructure drift.
     </p>
-
     <p>
-        Further enhancements will include monitoring, logging,
-        improved cache management and migration of the environment
-        to Terraform-managed Infrastructure as Code.
+        Future enhancements may include remote Terraform state and state
+        locking, Terraform validation in GitHub Actions, monitoring and
+        logging, improved cache management, reusable Terraform modules
+        and further reduction of hard-coded infrastructure identifiers.
     </p>
 </section>
 
