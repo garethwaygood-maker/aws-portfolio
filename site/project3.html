@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Project 03 | Hybrid AWS Network</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Project 03</h1>
+    <h2>Hybrid AWS Network</h2>
+
+    <p>
+        A hybrid multi-VPC AWS architecture using Transit Gateway,
+        Site-to-Site VPN and BGP dynamic routing to connect Production,
+        Development and Shared Services VPCs to a simulated on-premises network.
+    </p>
+
+    <p>
+        <a href="index.html">← Back to Portfolio</a>
+    </p>
+</header>
+
+<section>
+    <h2>Project Objective</h2>
+
+    <p>
+        The objective of this project was to design and build an enterprise-style
+        hybrid network in AWS, combining multiple VPCs with a simulated
+        on-premises environment.
+    </p>
+
+    <p>
+        The solution uses AWS Transit Gateway as the central routing hub and an
+        AWS Site-to-Site VPN using IPsec and BGP to exchange routes dynamically
+        with a VNS3 virtual router representing the on-premises network.
+    </p>
+
+    <p>
+        The environment was built manually through the AWS Management Console so
+        that each stage of VPC routing, Transit Gateway propagation, VPN
+        configuration, BGP peering and hybrid connectivity could be configured,
+        observed and troubleshot directly.
+    </p>
+</section>
+
+<section>
+    <h2>Architecture</h2>
+
+    <p>
+        Three AWS VPCs connect to a central Transit Gateway. The Transit Gateway
+        also terminates a Site-to-Site VPN attachment that connects to the VNS3
+        router in the simulated on-premises VPC.
+    </p>
+
+    <p>
+        BGP dynamically advertises the on-premises network
+        <strong>192.168.0.0/16</strong> into AWS and advertises the Production,
+        Development and Shared Services VPC prefixes back toward VNS3.
+    </p>
+
+    <div class="architecture-image">
+        <img
+            src="images/aws-project03-architecture.png"
+            alt="Project 03 AWS hybrid network architecture showing Production, Development and Shared Services VPCs connected through Transit Gateway to a Site-to-Site VPN and simulated on-premises VNS3 router"
+        >
+    </div>
+</section>
+
+<section>
+    <h2>Network Addressing</h2>
+
+    <div class="project">
+        <h3>Production VPC</h3>
+        <p><strong>VPC:</strong> 10.10.0.0/16</p>
+        <p><strong>Private subnet:</strong> 10.10.2.0/24</p>
+        <p><strong>Test EC2:</strong> 10.10.2.213</p>
+    </div>
+
+    <div class="project">
+        <h3>Development VPC</h3>
+        <p><strong>VPC:</strong> 10.20.0.0/16</p>
+        <p><strong>Private subnet:</strong> 10.20.2.0/24</p>
+        <p><strong>Test EC2:</strong> 10.20.2.131</p>
+    </div>
+
+    <div class="project">
+        <h3>Shared Services VPC</h3>
+        <p><strong>VPC:</strong> 10.30.0.0/16</p>
+        <p><strong>Private subnet:</strong> 10.30.2.0/24</p>
+        <p><strong>Test EC2:</strong> 10.30.2.29</p>
+    </div>
+
+    <div class="project">
+        <h3>Simulated On-Premises Network</h3>
+        <p><strong>Network:</strong> 192.168.0.0/16</p>
+        <p><strong>Private test subnet:</strong> 192.168.2.0/24</p>
+        <p><strong>VNS3 router private IP:</strong> 192.168.1.8</p>
+        <p><strong>On-premises test EC2:</strong> 192.168.2.117</p>
+    </div>
+</section>
+
+<section>
+    <h2>AWS Services and Components Used</h2>
+
+    <div class="project">
+        <h3>AWS Transit Gateway</h3>
+        <p>
+            Provides centralised routing between the Production, Development and
+            Shared Services VPCs and the Site-to-Site VPN attachment. VPC and VPN
+            routes are propagated into the Transit Gateway route table.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>AWS Site-to-Site VPN</h3>
+        <p>
+            Provides the encrypted IPsec connection between AWS and the simulated
+            on-premises VNS3 router. The VPN uses dynamic routing with BGP.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Amazon VPC</h3>
+        <p>
+            Four isolated VPCs represent Production, Development, Shared Services
+            and the simulated on-premises environment. Each network uses
+            non-overlapping IPv4 address space.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Amazon EC2</h3>
+        <p>
+            Small Linux test instances were deployed into each private network to
+            validate VPC-to-VPC and hybrid connectivity.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Amazon CloudWatch</h3>
+        <p>
+            CloudWatch BGP logging was enabled on the VPN tunnel during
+            troubleshooting to observe the AWS-side BGP session state and confirm
+            the neighbour address being used by AWS.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>EC2 Instance Connect Endpoint</h3>
+        <p>
+            A private EC2 Instance Connect Endpoint was used to obtain browser-based
+            SSH access to the Production test instance without assigning it a
+            public IP address.
+        </p>
+    </div>
+</section>
+
+<section>
+    <h2>Transit Gateway Routing</h2>
+
+    <p>
+        The Transit Gateway route table contains propagated routes for all three
+        AWS VPCs and the on-premises network learned through the VPN attachment.
+    </p>
+
+    <div class="architecture">
+        <pre>
+10.10.0.0/16    → Production VPC attachment
+10.20.0.0/16    → Development VPC attachment
+10.30.0.0/16    → Shared Services VPC attachment
+192.168.0.0/16  → Site-to-Site VPN attachment
+        </pre>
+    </div>
+
+    <p>
+        Each AWS VPC route table sends non-local Project 03 network prefixes to
+        the Transit Gateway. The on-premises route table sends AWS
+        <strong>10.0.0.0/8</strong> traffic to the VNS3 router network interface.
+    </p>
+</section>
+
+<section>
+    <h2>BGP Design</h2>
+
+    <p>
+        The Site-to-Site VPN uses BGP between AWS and the VNS3 virtual router.
+        The AWS Transit Gateway uses ASN <strong>64512</strong>, while the
+        customer gateway is presented to AWS using ASN <strong>65000</strong>.
+    </p>
+
+    <div class="architecture">
+        <pre>
+AWS BGP neighbour:   169.254.64.37
+VNS3 BGP neighbour:  169.254.64.38
+
+AWS ASN:             64512
+Customer ASN:        65000
+
+VNS3 advertises:
+192.168.0.0/16
+
+AWS advertises:
+10.10.0.0/16
+10.20.0.0/16
+10.30.0.0/16
+        </pre>
+    </div>
+
+    <p>
+        BGP prefix filters were configured on VNS3 so that the three AWS VPC
+        prefixes are accepted inbound and the simulated on-premises prefix is
+        permitted outbound.
+    </p>
+</section>
+
+<section>
+    <h2>VPN Troubleshooting</h2>
+
+    <p>
+        One of the most valuable parts of the project was diagnosing a state where
+        the IPsec tunnel was established but the dynamic VPN remained down because
+        BGP could not establish successfully.
+    </p>
+
+    <div class="project">
+        <h3>Observed Symptoms</h3>
+        <p>
+            AWS reported <strong>IPSEC IS UP</strong>, but the VPN tunnel status
+            remained down. VNS3 showed the BGP peer in an Active state rather than
+            Established.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Packet Capture</h3>
+        <p>
+            A VNS3 packet capture showed TCP SYN packets leaving
+            <strong>169.254.64.38</strong> for the AWS BGP neighbour
+            <strong>169.254.64.37:179</strong>, with no SYN-ACK received.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>CloudWatch BGP Logging</h3>
+        <p>
+            AWS BGP logs showed the AWS-side peer entering the Connect state and
+            attempting to establish a session with neighbour
+            <strong>169.254.64.38</strong>. This confirmed that both peers were
+            configured with the correct link-local BGP addresses.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Root Cause and Resolution</h3>
+        <p>
+            The IPsec Phase 2 traffic selectors were initially restricted to the
+            application networks. The BGP link-local addresses were therefore not
+            being carried correctly through the route-based VPN.
+        </p>
+
+        <p>
+            The local and remote VPN traffic selectors were changed on both AWS
+            and VNS3 to <strong>0.0.0.0/0</strong>. After renegotiation, the IPsec
+            tunnel returned to service and the BGP session changed to
+            <strong>Established</strong>.
+        </p>
+    </div>
+</section>
+
+<section>
+    <h2>Validation</h2>
+
+    <div class="project">
+        <h3>BGP Route Exchange</h3>
+        <p>
+            <strong>Result:</strong> VNS3 accepted the Production, Development and
+            Shared Services prefixes from AWS and advertised
+            <strong>192.168.0.0/16</strong> toward the Transit Gateway.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Transit Gateway Route Propagation</h3>
+        <p>
+            <strong>Result:</strong> The Transit Gateway route table showed
+            <strong>192.168.0.0/16</strong> as an active propagated route through
+            the VPN attachment, alongside the three VPC routes.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Production to On-Premises</h3>
+        <p><strong>Test:</strong> 10.10.2.213 → 192.168.2.117</p>
+        <p><strong>Result:</strong> 4 packets transmitted, 4 received, 0% packet loss.</p>
+    </div>
+
+    <div class="project">
+        <h3>Production to Development</h3>
+        <p><strong>Test:</strong> 10.10.2.213 → 10.20.2.131</p>
+        <p><strong>Result:</strong> 4 packets transmitted, 4 received, 0% packet loss.</p>
+    </div>
+
+    <div class="project">
+        <h3>Production to Shared Services</h3>
+        <p><strong>Test:</strong> 10.10.2.213 → 10.30.2.29</p>
+        <p><strong>Result:</strong> 4 packets transmitted, 4 received, 0% packet loss.</p>
+    </div>
+</section>
+
+<section>
+    <h2>Skills Demonstrated</h2>
+
+    <p>
+        <strong>AWS:</strong>
+        Transit Gateway, Site-to-Site VPN, VPC, EC2, CloudWatch,
+        Customer Gateway, Transit Gateway attachments and EC2 Instance Connect
+    </p>
+
+    <p>
+        <strong>Networking:</strong>
+        BGP, IPsec, IKEv2, route-based VPNs, VTI interfaces, dynamic routing,
+        CIDR planning, route propagation, route tables, next-hop routing,
+        multi-VPC design and hybrid connectivity
+    </p>
+
+    <p>
+        <strong>Troubleshooting:</strong>
+        Packet capture, TCP/179 analysis, CloudWatch BGP logging,
+        BGP state analysis, traffic-selector diagnosis and end-to-end
+        connectivity validation
+    </p>
+
+    <p>
+        <strong>Architecture:</strong>
+        Hub-and-spoke connectivity, centralised routing, hybrid cloud design,
+        simulated on-premises integration and private test workloads
+    </p>
+</section>
+
+<section>
+    <h2>Current Status &amp; Future Enhancements</h2>
+
+    <p>
+        Project 03 is fully deployed and validated. The architecture demonstrates
+        centralised connectivity between multiple AWS VPCs and a simulated
+        on-premises network using Transit Gateway, Site-to-Site VPN and BGP
+        dynamic routing.
+    </p>
+
+    <p>
+        The free VNS3 edition used for the lab supports a single VPN endpoint, so
+        only one AWS VPN tunnel was configured. A production design would
+        configure both AWS Site-to-Site VPN tunnels for high availability and
+        would normally use redundant on-premises VPN devices.
+    </p>
+
+    <p>
+        Future enhancements may include dual-tunnel high availability,
+        Transit Gateway route-table segmentation, hybrid DNS using Route 53 Resolver,
+        VPC Flow Logs, CloudWatch alarms and implementation of the complete
+        architecture using Terraform Infrastructure as Code.
+    </p>
+</section>
+
+<footer>
+    <p>Gareth Waygood | AWS Cloud &amp; Network Engineering</p>
+</footer>
+
+</body>
+</html>
