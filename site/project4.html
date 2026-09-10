@@ -48,7 +48,7 @@
         AWS Infrastructure as Code using Terraform, GitHub and GitHub Actions.
     </p>
 
-    <span class="status">In Progress</span>
+    <span class="status">In Progress — Network Foundation Deployed</span>
 </header>
 
 <section>
@@ -68,20 +68,18 @@
 </section>
 
 <section>
-    <h2>Planned Architecture</h2>
+    <h2>Current Architecture</h2>
 
     <ul>
-        <li>Amazon VPC</li>
-        <li>Two Availability Zones</li>
-        <li>Public subnets</li>
-        <li>Private subnets</li>
-        <li>Internet Gateway</li>
-        <li>Route tables and routing</li>
-        <li>Security Groups</li>
-        <li>Application Load Balancer</li>
-        <li>Amazon EC2 web servers</li>
-        <li>NAT Gateway where required</li>
-        <li>Terraform outputs for useful deployment information</li>
+        <li>VPC: <code>10.40.0.0/16</code></li>
+        <li>Two Availability Zones: <code>eu-west-2a</code> and <code>eu-west-2b</code></li>
+        <li>Public subnets: <code>10.40.1.0/24</code> and <code>10.40.2.0/24</code></li>
+        <li>Private subnets: <code>10.40.11.0/24</code> and <code>10.40.12.0/24</code></li>
+        <li>Internet Gateway attached to the VPC</li>
+        <li>Public route table with <code>0.0.0.0/0</code> routed to the Internet Gateway</li>
+        <li>Separate private route table</li>
+        <li>Route table associations for all four subnets</li>
+        <li>Security Groups, EC2 and load balancing to follow</li>
     </ul>
 </section>
 
@@ -100,6 +98,7 @@
 ├── providers.tf
 ├── terraform.tfvars
 ├── .gitignore
+├── .terraform.lock.hcl
 └── README.md</code></pre>
 </section>
 
@@ -124,10 +123,13 @@
     <h2>Current Build Stage</h2>
 
     <p>
-        The initial stage is to create the Terraform repository and file
-        structure, configure the AWS provider, and deploy the VPC. Public and
-        private subnets, routing, security, load balancing and EC2 resources will
-        then be added in logical stages.
+        The core network foundation is now deployed with Terraform: a VPC,
+        four subnets across two Availability Zones, an Internet Gateway, separate
+        public and private route tables, the public Internet route and all subnet
+        route table associations. A final <code>terraform plan</code> returned
+        <strong>No changes</strong>, confirming that AWS matches the configuration.
+        The Terraform code is also version controlled with Git and published to
+        a public GitHub repository. Security Groups are the next build stage.
     </p>
 </section>
 
@@ -136,12 +138,14 @@
 
     <ul>
         <li>Terraform Infrastructure as Code</li>
-        <li>AWS VPC networking</li>
+        <li>AWS VPC networking and IPv4 CIDR planning</li>
         <li>Multi-AZ architecture</li>
         <li>Public and private subnet design</li>
-        <li>AWS load balancing and EC2</li>
-        <li>Infrastructure source control with GitHub</li>
-        <li>Terraform validation with GitHub Actions</li>
+        <li>Internet Gateway and route table configuration</li>
+        <li>Terraform state and outputs</li>
+        <li>AWS IAM Identity Center / SSO authentication</li>
+        <li>Infrastructure source control with Git and GitHub</li>
+        <li>Terraform formatting, validation, planning and deployment</li>
         <li>Repeatable and version-controlled cloud deployment</li>
     </ul>
 </section>
@@ -150,8 +154,10 @@
     <h2>Project Status</h2>
 
     <p>
-        <strong>In Progress.</strong> This page will be updated as each stage of
-        the Terraform deployment is completed and tested.
+        <strong>In Progress.</strong> The AWS network foundation has been
+        successfully deployed and verified using Terraform. Security Groups,
+        compute resources, load balancing and automation will be added as the
+        project progresses.
     </p>
 
     <p class="project-nav">
