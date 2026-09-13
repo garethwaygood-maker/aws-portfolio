@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Project 5 | Wix to AWS Website Migration</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .status {
+            display: inline-block;
+            margin: 0.5rem 0 1rem;
+            padding: 0.35rem 0.7rem;
+            border: 1px solid currentColor;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .project-nav {
+            margin-top: 1.5rem;
+        }
+
+        .project-nav a,
+        footer a {
+            color: inherit;
+        }
+
+        code {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .workflow {
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Project 05</h1>
+    <h2>Migration of Cotswold Drone Pilots from Wix to AWS</h2>
+
+    <p>
+        Website rebuild, AWS hosting, DNS migration and domain transfer with minimal downtime.
+    </p>
+
+    <span class="status">Completed</span>
+</header>
+
+<section>
+    <h2>Project Overview</h2>
+
+    <p>
+        This project involved migrating the Cotswold Drone Pilots website away from Wix
+        and onto an AWS-hosted architecture while preserving the existing domain name,
+        Google Workspace email service and associated DNS records.
+    </p>
+
+    <p>
+        The migration was designed to separate the website from the previous hosted
+        platform, move domain and DNS management into AWS, and complete the cutover
+        with minimal disruption to both the website and email.
+    </p>
+</section>
+
+<section>
+    <h2>Website Build</h2>
+
+    <p>
+        The Cotswold Drone Pilots website was rebuilt as a static site using HTML, CSS
+        and media assets, removing the dependency on the Wix website builder and hosting platform.
+    </p>
+
+    <ul>
+        <li>Rebuilt static website using HTML and CSS</li>
+        <li>Responsive layout for desktop and mobile</li>
+        <li>Separate portfolio and fleet pages</li>
+        <li>Video content and imagery optimised for web delivery</li>
+        <li>Reusable navigation and styling across the site</li>
+        <li>Local testing completed before AWS cutover</li>
+    </ul>
+</section>
+
+<section>
+    <h2>AWS Infrastructure Build</h2>
+
+    <p>
+        The new site was deployed using AWS services designed for secure, highly available
+        static website delivery.
+    </p>
+
+    <ul>
+        <li>Amazon S3 used to store the website files and media assets</li>
+        <li>Amazon CloudFront used as the global content delivery layer</li>
+        <li>AWS Certificate Manager used for HTTPS/TLS certificates</li>
+        <li>Amazon Route 53 used for authoritative DNS hosting</li>
+        <li>CloudFront configured for both the root domain and <code>www</code> hostname</li>
+        <li>Default root object configured as <code>index.html</code></li>
+    </ul>
+</section>
+
+<section>
+    <h2>Domain Registration Transfer</h2>
+
+    <p>
+        Domain registration for <code>cotswolddronepilots.com</code> was transferred away
+        from Wix and moved into AWS, bringing the website, DNS and domain management
+        under the same cloud platform.
+    </p>
+
+    <p>
+        The Route 53 hosted zone was prepared before the nameserver cutover so that the
+        DNS configuration was already in place when control moved away from Wix.
+    </p>
+</section>
+
+<section>
+    <h2>Preserving Existing DNS Records</h2>
+
+    <p>
+        A key requirement was to preserve the existing Google Workspace email service.
+        The DNS records required for mail delivery and domain verification were recreated
+        in Route 53 before the nameserver change.
+    </p>
+
+    <ul>
+        <li>Google Workspace MX records preserved</li>
+        <li>SPF TXT record preserved</li>
+        <li>Google site verification TXT record preserved</li>
+        <li>Existing domain verification records retained</li>
+        <li>Inbound and outbound email tested after migration</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Migration Workflow</h2>
+
+    <p class="workflow">
+        Rebuild website → create S3 hosting environment → configure CloudFront →
+        request and validate ACM certificate → create Route 53 hosted zone →
+        recreate DNS records → configure CloudFront custom domains →
+        transfer domain registration → update nameservers → create Route 53 aliases →
+        test website and email.
+    </p>
+</section>
+
+<section>
+    <h2>Minimal-Downtime Cutover</h2>
+
+    <p>
+        The migration was carried out in stages so that the new AWS environment was ready
+        before DNS control changed. This allowed the website and email configuration to be
+        validated before final cutover.
+    </p>
+
+    <p>
+        By preserving the existing DNS records and preparing the AWS infrastructure in advance,
+        the domain could move from Wix to AWS with minimal interruption to public website access
+        and no loss of Google Workspace email functionality.
+    </p>
+</section>
+
+<section>
+    <h2>Skills Demonstrated</h2>
+
+    <ul>
+        <li>AWS S3 static website hosting</li>
+        <li>Amazon CloudFront configuration</li>
+        <li>Amazon Route 53 DNS management</li>
+        <li>AWS Certificate Manager and HTTPS</li>
+        <li>Domain registration transfer</li>
+        <li>DNS migration planning</li>
+        <li>MX, TXT and SPF record preservation</li>
+        <li>Website migration and cutover planning</li>
+        <li>Cloud hosting and CDN architecture</li>
+        <li>Minimising service disruption during migration</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Project Outcome</h2>
+
+    <p>
+        <strong>Completed.</strong> The Cotswold Drone Pilots website was successfully moved
+        from Wix to AWS, with the site rebuilt and hosted through S3 and CloudFront,
+        DNS moved to Route 53, the domain registration transferred to AWS and Google Workspace
+        email preserved throughout the migration.
+    </p>
+
+    <p class="project-nav">
+        <a href="index.html">← Back to AWS Portfolio</a>
+    </p>
+</section>
+
+<footer>
+    <p>
+        Gareth Waygood | AWS Cloud &amp; Network Engineer |
+        <a href="mailto:gareth@waygood.net">gareth@waygood.net</a> |
+        <a href="tel:+447971277177">+44 7971 277177</a>
+    </p>
+</footer>
+
+</body>
+</html>
