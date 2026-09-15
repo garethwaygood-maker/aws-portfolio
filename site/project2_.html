@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Project 02 | Highly Available AWS Network</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Project 02</h1>
+    <h2>Highly Available AWS Network</h2>
+
+    <p>
+        A secure multi-AZ AWS architecture with separate web and application
+        tiers, public and internal load balancing, private application servers,
+        HTTPS and private configuration retrieval from Amazon S3.
+    </p>
+
+    <p>
+        <a href="index.html">← Back to Portfolio</a>
+    </p>
+
+    <p class="github-cta">
+        <a
+            class="github-button"
+            href="https://project2.aws.waygood.net"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            View Live Project 02 ↗
+        </a>
+    </p>
+</header>
+
+
+<section>
+    <h2>Project Objective</h2>
+
+    <p>
+        The objective of this project was to design and deploy a production-style,
+        highly available AWS network across two Availability Zones in the London
+        region. The design separates Internet-facing web servers from private
+        application servers and controls traffic between every tier using load
+        balancers and security groups.
+    </p>
+
+    <p>
+        The environment was built manually through the AWS Management Console to
+        develop a detailed understanding of VPC routing, subnet design, load
+        balancing, security-group references, private service access and EC2
+        management without opening administrative inbound ports.
+    </p>
+</section>
+
+
+<section>
+    <h2>Architecture</h2>
+
+    <p>
+        The VPC spans two Availability Zones. Each zone contains one public subnet
+        for the web tier and one private subnet for the application tier. An
+        Internet-facing Application Load Balancer distributes HTTPS requests to
+        both web servers, while a separate internal Application Load Balancer
+        distributes API requests to both private application servers.
+    </p>
+
+    <div class="architecture-image">
+        <img
+            src="images/aws-project02-architecture.png"
+            alt="Project 02 AWS architecture diagram showing two Availability Zones, public and private subnets, public and internal Application Load Balancers, four EC2 instances, a Regional NAT Gateway, Systems Manager and private S3 configuration through a Gateway Endpoint"
+        >
+    </div>
+</section>
+
+
+<section>
+    <h2>Network Addressing</h2>
+
+    <div class="project">
+        <h3>Amazon VPC</h3>
+        <p><strong>aws-project-02-vpc:</strong> 10.20.0.0/16</p>
+    </div>
+
+    <div class="project">
+        <h3>Availability Zone eu-west-2a</h3>
+        <p><strong>Public subnet:</strong> 10.20.1.0/24</p>
+        <p><strong>Private subnet:</strong> 10.20.11.0/24</p>
+    </div>
+
+    <div class="project">
+        <h3>Availability Zone eu-west-2b</h3>
+        <p><strong>Public subnet:</strong> 10.20.2.0/24</p>
+        <p><strong>Private subnet:</strong> 10.20.12.0/24</p>
+    </div>
+</section>
+
+
+<section>
+    <h2>AWS Services Used</h2>
+
+    <div class="project">
+        <h3>Amazon VPC</h3>
+        <p>
+            Provides the isolated network, IPv4 addressing, public and private
+            subnets, route tables and Internet Gateway used by the architecture.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Elastic Load Balancing</h3>
+        <p>
+            The Internet-facing <strong>aws-project-02-web-alb</strong> accepts
+            HTTPS traffic on port 443 and forwards requests to the web tier on
+            port 80. The internal <strong>aws-project-02-app-alb</strong> listens
+            on port 80 and forwards requests to the application tier on port 8080.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Amazon EC2</h3>
+        <p>
+            Two Apache web servers and two Flask/Gunicorn application servers are
+            distributed across separate Availability Zones. The application
+            servers have no direct inbound route from the Internet.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Amazon Route 53 and AWS Certificate Manager</h3>
+        <p>
+            Route 53 directs <strong>project2.aws.waygood.net</strong> to the
+            public Application Load Balancer. An ACM certificate secures the
+            public endpoint with HTTPS, and HTTP requests are redirected to HTTPS.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Amazon S3 and S3 Gateway Endpoint</h3>
+        <p>
+            The private bucket <strong>waygood-project-02-app-config</strong>
+            stores application configuration. Both application servers retrieve
+            the configuration through <strong>aws-project-02-vpce-s3</strong>,
+            keeping S3 traffic on the AWS network instead of sending it through
+            the NAT Gateway.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Regional NAT Gateway</h3>
+        <p>
+            <strong>aws-project-02-nat-regional</strong> provides controlled
+            outbound Internet access from the private subnets for software
+            installation and operating-system services. It is not part of the
+            inbound application request path.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>AWS Identity and Access Management</h3>
+        <p>
+            EC2 instance roles provide temporary AWS credentials. The application
+            role has least-privilege permission to read only the required S3
+            configuration object and includes the permissions needed for Systems
+            Manager.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>AWS Systems Manager Session Manager</h3>
+        <p>
+            Provides secure browser-based administration of all four EC2 instances
+            without SSH keys, bastion hosts or inbound SSH security-group rules.
+        </p>
+    </div>
+</section>
+
+
+<section>
+    <h2>Application Request Flow</h2>
+
+    <ol>
+        <li>
+            The client resolves <strong>project2.aws.waygood.net</strong> through
+            Amazon Route 53.
+        </li>
+        <li>
+            The client establishes an HTTPS connection to
+            <strong>aws-project-02-web-alb</strong> on port 443.
+        </li>
+        <li>
+            The public ALB forwards the request to a healthy Apache web server on
+            port 80 in either Availability Zone.
+        </li>
+        <li>
+            Requests to <strong>/api/</strong> are reverse-proxied by Apache to
+            <strong>aws-project-02-app-alb</strong> on port 80.
+        </li>
+        <li>
+            The internal ALB forwards the request to a healthy Gunicorn target on
+            port 8080 in either private subnet.
+        </li>
+        <li>
+            The Flask application assumes its EC2 IAM role and retrieves its JSON
+            configuration from Amazon S3 through the S3 Gateway Endpoint.
+        </li>
+        <li>
+            The response returns through the internal ALB, web server and public
+            ALB to the client.
+        </li>
+    </ol>
+</section>
+
+
+<section>
+    <h2>Security Design</h2>
+
+    <div class="project">
+        <h3>Public Entry Point</h3>
+        <p>
+            The public Application Load Balancer is the only Internet-facing
+            application entry point. It terminates TLS using ACM and redirects
+            unencrypted HTTP requests to HTTPS.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Security-Group Chaining</h3>
+        <p>
+            The web servers accept HTTP only from the public ALB security group.
+            The internal ALB accepts requests only from the web-server security
+            group. Application servers accept port 8080 only from the internal
+            ALB security group.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Private Application Tier</h3>
+        <p>
+            The application instances are located in private subnets and cannot
+            be reached directly from the Internet or directly from the web tier.
+            Application requests must pass through the internal ALB.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Private S3 Configuration</h3>
+        <p>
+            S3 Block Public Access is enabled. The application uses an IAM role
+            rather than stored access keys, and its inline policy permits
+            <strong>s3:GetObject</strong> only for
+            <strong>config/app-config.json</strong> in the project bucket.
+        </p>
+    </div>
+</section>
+
+
+<section>
+    <h2>High Availability</h2>
+
+    <p>
+        Both compute tiers are deployed across eu-west-2a and eu-west-2b. Each
+        load balancer performs health checks and sends requests only to healthy
+        targets. This removes any individual web server, application server or
+        Availability Zone from being the sole application endpoint.
+    </p>
+
+    <div class="architecture">
+        <pre>
+Internet
+   |
+   v
+Multi-AZ Public ALB
+   |
+   +-----> Web Server 01 (eu-west-2a)
+   |
+   +-----> Web Server 02 (eu-west-2b)
+                  |
+                  v
+         Multi-AZ Internal ALB
+                  |
+   +--------------+--------------+
+   |                             |
+   v                             v
+App Server 01                App Server 02
+(eu-west-2a)                 (eu-west-2b)
+        </pre>
+    </div>
+</section>
+
+
+<section>
+    <h2>Application Configuration</h2>
+
+    <p>
+        The Flask application uses the AWS SDK for Python (Boto3) to retrieve a
+        JSON configuration object from Amazon S3. Boto3 automatically obtains
+        temporary credentials from the EC2 instance role, so no credentials are
+        stored in the application code.
+    </p>
+
+    <p>
+        The live webpage displays the returned environment, configuration version,
+        configuration message, application-server hostname and configuration source.
+        Repeated requests demonstrate independent load balancing across both the web
+        and application tiers.
+    </p>
+</section>
+
+
+<section>
+    <h2>Validation</h2>
+
+    <div class="project">
+        <h3>Public HTTPS Endpoint</h3>
+        <p>
+            <strong>Result:</strong> The custom HTTPS domain returned the project
+            page using a valid ACM certificate, while HTTP redirected to HTTPS.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Web-Tier Load Balancing</h3>
+        <p>
+            <strong>Result:</strong> Requests were handled successfully by web-01
+            and web-02 across both Availability Zones.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Application-Tier Load Balancing</h3>
+        <p>
+            <strong>Result:</strong> Repeated API requests returned hostnames from
+            both private application servers through the internal ALB.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Application Isolation</h3>
+        <p>
+            <strong>Result:</strong> Direct web-server connections to application
+            private IP addresses were blocked after the temporary test rule was
+            removed, while access through the internal ALB continued to work.
+        </p>
+    </div>
+
+    <div class="project">
+        <h3>Private S3 Access</h3>
+        <p>
+            <strong>Result:</strong> Both application servers retrieved the private
+            configuration object using their IAM role and the S3 Gateway Endpoint.
+        </p>
+    </div>
+</section>
+
+
+<section>
+    <h2>Skills Demonstrated</h2>
+
+    <p>
+        <strong>AWS:</strong>
+        VPC, EC2, Elastic Load Balancing, S3, Route 53, ACM, IAM,
+        Systems Manager, NAT Gateway and VPC Gateway Endpoints
+    </p>
+
+    <p>
+        <strong>Networking:</strong>
+        Multi-AZ subnet design, CIDR planning, route tables, Internet Gateway,
+        private routing, DNS, HTTPS, reverse proxying and layered load balancing
+    </p>
+
+    <p>
+        <strong>Security:</strong>
+        Security-group referencing, private application subnets, least-privilege
+        IAM, temporary credentials, blocked public S3 access and keyless EC2
+        administration
+    </p>
+
+    <p>
+        <strong>Application:</strong>
+        Apache HTTP Server, reverse proxy configuration, Python, Flask, Gunicorn,
+        Boto3, JSON APIs and systemd services
+    </p>
+</section>
+
+
+<section>
+    <h2>Current Status &amp; Future Enhancements</h2>
+
+    <p>
+        Project 02 is fully deployed and validated. The live demonstration proves
+        both stages of load balancing and displays configuration retrieved privately
+        from Amazon S3.
+    </p>
+
+    <p>
+        Future enhancements may include EC2 Auto Scaling groups, CloudWatch alarms
+        and dashboards, VPC Flow Logs, centralised application logging, AWS WAF,
+        automated deployment and Terraform Infrastructure as Code.
+    </p>
+</section>
+
+
+<footer>
+    <p>Gareth Waygood | AWS Cloud &amp; Network Engineering</p>
+</footer>
+
+</body>
+</html>
